@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  # 1. Next.js App
+  web:
+    container_name: nextjs-ai-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      # ใส่ ENV ของคุณตามเดิม
+      - DATABASE_URL=${DATABASE_URL}
+      - N8N_AUTH_URL=${N8N_AUTH_URL}
+      - N8N_LOG_END_URL=${N8N_LOG_END_URL}
+      - Gemini_2_5_Flash_Image=${Gemini_2_5_Flash_Image}
+      - GEMINI_3_PRO_URL=${GEMINI_3_PRO_URL}
+      - HOSTNAME=0.0.0.0
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - SESSION_SECRET=${SESSION_SECRET}
+
+  # 2. Cloudflare Quick Tunnel
+  tunnel:
+    container_name: quick-tunnel
+    image: cloudflare/cloudflared:latest
+    restart: always
+    command: tunnel --url http://web:3000
+    depends_on:
+      - web

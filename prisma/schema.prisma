@@ -1,0 +1,40 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "sqlite" // หรือ postgresql ตามที่คุณใช้
+  url      = env("DATABASE_URL")
+}
+
+model AdminUser {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  passwordHash String   @map("password_hash")
+  displayName  String?  @map("display_name")
+  role         String   @default("admin")
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("admin_users")
+}
+
+// prisma/schema.prisma
+
+model Task {
+  id           Int      @id @default(autoincrement())
+  title        String
+  enabled      Boolean  @default(true)
+
+  masterPrompt String   @map("master_prompt")
+  imageCount   Int      @default(1) @map("image_count")
+  promptMode   String   @default("USER") @map("prompt_mode")
+
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("tasks")
+}
